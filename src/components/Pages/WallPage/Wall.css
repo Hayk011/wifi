@@ -1,0 +1,21 @@
+.add-item{
+    padding: 10px;
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+.wall-item{
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background-color: #e7e7e7;
+    cursor: pointer;
+    margin-top: 5px;
+}
+.check{
+    color: green;
+}
+.bin {
+    color: red;
+    padding: 0px 10px 0px 10px;
+}

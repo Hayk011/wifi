@@ -1,0 +1,28 @@
+header {
+    width: 15%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    background-color: #fff;
+}
+
+header ul li:not(:first-child) {
+    margin-top: 3px
+}
+
+.router-item {
+    padding: 5px;
+    list-style-type: none;
+}
+
+.router-item:hover {
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+.router-item a {
+    text-decoration: none;
+    color: #282c34;
+    font-size: 18px;
+}
