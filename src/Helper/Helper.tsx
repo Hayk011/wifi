@@ -9,13 +9,15 @@ export const roomAddHandler = (callback: (addRoom: IWalls) => void): void => {
   callback(add);
 };
 
-export const getRuts = (callback: (data: any) => void): void => {
+export const getRuts = (callback: (data: IRouts[]) => void): void => {
   fetch("http://localhost:8080/api/routers")
     .then((info) => info.json())
     .then((data) => callback(data))
     .catch((e: Error) => console.log(e));
 };
-export const getWalls = (callback: (data: any) => void): void => {
+export const getWallsTypes = (
+  callback: (data: IWallsTypes[]) => void
+): void => {
   fetch("http://localhost:8080/api/walls")
     .then((info) => info.json())
     .then((data) => callback(data))
@@ -29,7 +31,7 @@ export const routhandler = (
 ): void => {
   let routName: string = name.split(" ")[1];
   for (let i: number = 0; i < routs.length; i++) {
-    if (routs[i].name === routName) {
+    if (routs[i].name === name) {
       let routData = {
         name: routs[i].name,
         price: routs[i].price,
@@ -121,7 +123,11 @@ const isAvaliable = (
   //@ts-ignore
   return temp_rout_dist >= 0;
 };
-export const algoritm = (arr: any, rout: IRout) => {
+export const algoritm = (
+  arr: any,
+  rout: IRout,
+  setResalt: (e: any) => void
+) => {
   let n = arr.length;
   let prev = 0,
     curr = 1,
@@ -167,4 +173,5 @@ export const algoritm = (arr: any, rout: IRout) => {
       break;
     }
   }
+  setResalt([...position]);
 };

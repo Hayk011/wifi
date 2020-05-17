@@ -21,3 +21,7 @@ export interface IRout {
   price?: number;
   spread?: number;
 }
+export interface IPosition {
+  room: number;
+  place: number;
+}

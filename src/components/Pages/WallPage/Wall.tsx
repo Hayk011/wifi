@@ -8,18 +8,20 @@ import {
   roomAddHandler,
   arrayModifyHandler,
   routhandler,
+  algoritm,
 } from "../../../Helper/Helper";
 import {
   IWalls,
   IWallsTypes,
   IRouts,
   IRout,
+  IPosition,
 } from "../../../Interface/Iterface";
-import { algoritm, getRuts, getWalls } from "../../../Helper/Helper";
 
 const Wall = ({ location }: any) => {
   const [walls, setWalls] = React.useState<IWalls[]>([]);
   const [rout, setRout] = React.useState<IRout>({});
+  const [result, setResult] = React.useState<IPosition[]>([]);
   const [wallsType, setWallsType] = React.useState<IWallsTypes[]>([
     {
       id: "5ebc2a1d7119ed0817f8609e",
@@ -140,7 +142,7 @@ const Wall = ({ location }: any) => {
   const sendHandler = () => {
     arrayModifyHandler(wallsType, walls, (data: IWalls[]) => {
       setWalls([...data]);
-      algoritm(walls, rout);
+      algoritm(walls, rout, setResult);
     });
   };
   const changerouterHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -154,6 +156,7 @@ const Wall = ({ location }: any) => {
     leave: { opacity: 0, transform: "translate3d(0,-50px,0)" },
   });
   let ids: number[] = [];
+  console.log(result);
   return (
     <div className="page-wrapper">
       <div className="blue-bannr"></div>
@@ -184,13 +187,13 @@ const Wall = ({ location }: any) => {
       ) : (
         <p>Yoy must add wall</p>
       )}
-      {isRedy.split("").length === walls.length && walls.length >= 3 ? (
+      {isRedy.split("").length === walls.length && walls.length >= 1 ? (
         <select
           value={rout.name}
           onChange={(event) => changerouterHandler(event)}
         >
           {routs.map((rout: IRout) => (
-            <option key={rout.id}>
+            <option key={rout.id} value={rout.name}>
               Name: {rout.name} Spread: {rout.spread}
             </option>
           ))}
@@ -198,6 +201,17 @@ const Wall = ({ location }: any) => {
       ) : null}
 
       {rout.name ? <button onClick={sendHandler}>Send</button> : null}
+      <ul>
+        {result.map((position: IPosition, index) => (
+          <li key={index}>
+            Room: {position.room} Possition:
+            {position.place === 0 ? " End" : " Middle"}
+          </li>
+        ))}
+      </ul>
+      {result.length > 0 && rout.price ? (
+        <p>{result.length * rout.price} AMD</p>
+      ) : null}
 
       <div>
         {transaction.map(
