@@ -26,53 +26,62 @@ const calculatePercent = (len1: any, perc: any) => {
 };
 //start----room
 const isAvaliable = (start: any, part1: any, end: any, part2: any, rooms: any) => {
-    let height = rooms[0].height;
+    let height = +rooms[0].height;
     let main_len = 0;
-    let end_len;
-    for (let i = start; i < end; i++) {
+    for (let i = start; i <= end; i++) {
         if (i === end) {
-            end_len = rooms[end].len;
-            main_len += part2 === 0 ? 0 : end_len / 2;
+            if (end !== rooms.length) {
+                let end_len = +rooms[end].width;
+                main_len += part2 === 0 ? 0 : end_len / 2;
+            }
+        } else if (i === start) {
+            let start_len = +rooms[start].width;
+            main_len += part1 === 0 ? start_len : start_len / 2
         } else {
-            main_len += rooms[i].len; //TELL HAIKO TO CHANGE ROOM TO CORRESPOND ARRAY OF OBJECT
+            main_len += +rooms[i].width; //TELL HAIKO TO CHANGE ROOM TO CORRESPOND ARRAY OF OBJECT
         }
     }
-    let cur_dist = Math.ceil(Math.sqrt(height ** 2 + main_len ** 2));
+    let cur_dist = Math.ceil(Math.sqrt(height**2 + main_len**2));
     let cosL = main_len / cur_dist;
     let temp_end = end;
-    let temp_rout_dist;
+    let temp_rout_dist = 9;
     if (part2 === 1) {
         //@ts-ignore
-        temp_rout_dist -= rooms[end].len / cosL;
+        temp_rout_dist -= +rooms[end].width /(2*cosL);
         if (end !== start) {
             //@ts-ignore
-            temp_rout_dist = calculatePercent(temp_rout_dist, rooms([end - 1].perc));
+            temp_rout_dist = calculatePercent(temp_rout_dist, rooms[end - 1].conductivityPercent);
         }
     }
+    console.log('end, start',temp_end,start);
+    console.log('temp_rout_dist before while', temp_rout_dist);
     while (temp_end > start) {
         if (temp_end - 1 === start) {
             if (part1 === 1) {
                 //@ts-ignore
-                temp_rout_dist -= (rooms[start].len / 2) * cosL;
+                temp_rout_dist -= +rooms[start].width / (2 * cosL);
             } else {
                 //@ts-ignore
-                temp_rout_dist -= rooms[start].len / cosL;
+                temp_rout_dist -= +rooms[start].width / cosL;
             }
             break;
         } else {
             temp_end -= 1;
             //@ts-ignore
-            temp_rout_dist -= rooms([temp_end].len) / cosL;
+            temp_rout_dist -= +rooms[temp_end].width / cosL;
             temp_rout_dist = calculatePercent(
                 temp_rout_dist,
-                rooms[temp_end - 1].perc
+                rooms[temp_end - 1].conductivityPercent
             );
         }
     }
     //@ts-ignore
-    return temp_rout_dist > end_len;
+    console.log('temp_rout_dist 2', temp_rout_dist);
+    console.log(cur_dist);
+    return temp_rout_dist >= 0;
 };
 export const algoritm = (arr: any) => {
+    console.log(arr);
     let n = arr.length;
     let prev = 0,
         curr = 1,
@@ -80,31 +89,34 @@ export const algoritm = (arr: any) => {
         part2 = 1;
     let position = [];
     while (true) {
-        if (
-            prev <= curr &&
-            curr < n &&
-            isAvaliable(prev, part1, curr, part2, arr)
-        ) {
+        console.log('positions', position);
+        console.log('prev, part1, curr, part2', prev, part1, curr, part2);
+        let isAv = isAvaliable(prev, part1, curr, part2, arr);
+        console.log('isAv', isAv);
+        console.log('curr, n', curr, n);
+        if (curr < n && isAv) {
+            console.log('ifff');
             if (part2 === 1) {
                 part2 = 0;
                 curr += 1;
             } else {
                 part2 += 1;
             }
-        } else if (
-            prev <= curr &&
-            curr === n &&
-            isAvaliable(prev, part1, curr, part2, arr)
-        ) {
+        }
+        else if(curr === n &&  isAv){
             position.push({
-                room: curr,
-                place: 0
+                room:curr,
+                place:0
             });
-        } else if (prev <= curr && curr === n) {
-            position.push({room: curr, place: 0});
-            position.push();
             break;
-        } else if (prev <= curr && curr < n) {
+        }
+        else if (curr === n) {
+            position.push({room: curr - 1, place: 1});
+            position.push({room: curr, place: 0});
+            break;
+        }
+        else if (curr < n) {
+            console.log('ssss');
             if (part2 === 0) {
                 position.push({
                     room: curr - 1,
@@ -113,6 +125,7 @@ export const algoritm = (arr: any) => {
                 prev = curr - 1;
                 part1 = 1;
             } else {
+                console.log('aaaaa');
                 position.push({
                     room: curr,
                     place: 0
@@ -120,11 +133,8 @@ export const algoritm = (arr: any) => {
                 prev = curr;
                 part1 = 0;
             }
-        } else {
-            position.push({
-                room: curr,
-                place: part2
-            });
+        }
+        else{
             break;
         }
     }
