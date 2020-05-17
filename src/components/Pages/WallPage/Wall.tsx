@@ -4,12 +4,22 @@ import queryString from "querystring";
 import "../../../font/style.css";
 import "./Wall.css";
 import Modal from "../../Modal/Modal";
-import { roomAddHandler, arrayModifyHandler } from "../../../Helper/Helper";
-import { IWalls, IWallsTypes } from "../../../Interface/Iterface";
+import {
+  roomAddHandler,
+  arrayModifyHandler,
+  routhandler,
+} from "../../../Helper/Helper";
+import {
+  IWalls,
+  IWallsTypes,
+  IRouts,
+  IRout,
+} from "../../../Interface/Iterface";
 import { algoritm, getRuts, getWalls } from "../../../Helper/Helper";
 
 const Wall = ({ location }: any) => {
   const [walls, setWalls] = React.useState<IWalls[]>([]);
+  const [rout, setRout] = React.useState<IRout>({});
   const [wallsType, setWallsType] = React.useState<IWallsTypes[]>([
     {
       id: "5ebc2a1d7119ed0817f8609e",
@@ -45,6 +55,38 @@ const Wall = ({ location }: any) => {
       id: "5ebc2a1d7119ed0817f860a4",
       name: "Твердый железобетон",
       conductivityPercent: 10.0,
+    },
+  ]);
+  const [routs, setRouts] = React.useState<IRouts[]>([
+    {
+      id: "5ec11b6d98eb610350764813",
+      name: "ucom",
+      price: 20,
+      spread: 20,
+    },
+    {
+      id: "5ec11b8998eb610350764814",
+      name: "hiline",
+      price: 40,
+      spread: 60,
+    },
+    {
+      id: "5ec11bb398eb610350764815",
+      name: "vivacell",
+      price: 100,
+      spread: 105,
+    },
+    {
+      id: "5ec11bfb98eb610350764816",
+      name: "beeline",
+      price: 70,
+      spread: 55,
+    },
+    {
+      id: "5ec11c4098eb610350764818",
+      name: "skynet",
+      price: 8,
+      spread: 10,
     },
   ]);
   const [wallName, setWallName] = React.useState<string>("");
@@ -98,7 +140,12 @@ const Wall = ({ location }: any) => {
   const sendHandler = () => {
     arrayModifyHandler(wallsType, walls, (data: IWalls[]) => {
       setWalls([...data]);
-      algoritm(walls);
+      algoritm(walls, rout);
+    });
+  };
+  const changerouterHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    routhandler(event.target.value, routs, (data: IRout) => {
+      setRout(data);
     });
   };
   const transaction = useTransition(toggle, null, {
@@ -106,7 +153,6 @@ const Wall = ({ location }: any) => {
     enter: { opacity: 1, transform: "translate3d(0,0px,0)" },
     leave: { opacity: 0, transform: "translate3d(0,-50px,0)" },
   });
-  console.log(walls);
   let ids: number[] = [];
   return (
     <div className="page-wrapper">
@@ -139,8 +185,20 @@ const Wall = ({ location }: any) => {
         <p>Yoy must add wall</p>
       )}
       {isRedy.split("").length === walls.length && walls.length >= 3 ? (
-        <button onClick={sendHandler}>Send</button>
+        <select
+          value={rout.name}
+          onChange={(event) => changerouterHandler(event)}
+        >
+          {routs.map((rout: IRout) => (
+            <option key={rout.id}>
+              Name: {rout.name} Spread: {rout.spread}
+            </option>
+          ))}
+        </select>
       ) : null}
+
+      {rout.name ? <button onClick={sendHandler}>Send</button> : null}
+
       <div>
         {transaction.map(
           ({ item, key, props: animation }) =>

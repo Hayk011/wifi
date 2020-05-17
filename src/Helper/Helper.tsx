@@ -1,4 +1,4 @@
-import { IWalls, IWallsTypes } from "../Interface/Iterface";
+import { IWalls, IWallsTypes, IRout, IRouts } from "../Interface/Iterface";
 
 export const roomAddHandler = (callback: (addRoom: IWalls) => void): void => {
   let add: IWalls = {
@@ -20,6 +20,25 @@ export const getWalls = (callback: (data: any) => void): void => {
     .then((info) => info.json())
     .then((data) => callback(data))
     .catch((e: Error) => console.log(e));
+};
+
+export const routhandler = (
+  name: string,
+  routs: IRout[],
+  callback: (data: IRout) => void
+): void => {
+  let routName: string = name.split(" ")[1];
+  for (let i: number = 0; i < routs.length; i++) {
+    if (routs[i].name === routName) {
+      let routData = {
+        name: routs[i].name,
+        price: routs[i].price,
+        id: routs[i].id,
+        spread: routs[i].spread,
+      };
+      callback(routData);
+    }
+  }
 };
 
 export const arrayModifyHandler = (
@@ -46,7 +65,8 @@ const isAvaliable = (
   part1: any,
   end: any,
   part2: any,
-  rooms: any
+  rooms: any,
+  spread: any
 ) => {
   let height = +rooms[0].height;
   let main_len = 0;
@@ -60,13 +80,13 @@ const isAvaliable = (
       let start_len = +rooms[start].width;
       main_len += part1 === 0 ? start_len : start_len / 2;
     } else {
-      main_len += +rooms[i].width; //TELL HAIKO TO CHANGE ROOM TO CORRESPOND ARRAY OF OBJECT
+      main_len += +rooms[i].width;
     }
   }
   let cur_dist = Math.ceil(Math.sqrt(height ** 2 + main_len ** 2));
   let cosL = main_len / cur_dist;
   let temp_end = end;
-  let temp_rout_dist = 40;
+  let temp_rout_dist = spread;
   if (part2 === 1) {
     //@ts-ignore
     temp_rout_dist -= +rooms[end].width / (2 * cosL);
@@ -101,7 +121,7 @@ const isAvaliable = (
   //@ts-ignore
   return temp_rout_dist >= 0;
 };
-export const algoritm = (arr: any) => {
+export const algoritm = (arr: any, rout: IRout) => {
   let n = arr.length;
   let prev = 0,
     curr = 1,
@@ -109,7 +129,7 @@ export const algoritm = (arr: any) => {
     part2 = 1;
   let position = [];
   while (true) {
-    let isAv = isAvaliable(prev, part1, curr, part2, arr);
+    let isAv = isAvaliable(prev, part1, curr, part2, arr, rout.spread);
     if (curr < n && isAv) {
       if (part2 === 1) {
         part2 = 0;
